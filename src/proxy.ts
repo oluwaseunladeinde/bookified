@@ -1,6 +1,14 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-export default clerkMiddleware();
+// Define protected routes
+const isProtectedRoute = createRouteMatcher(['/books/new(.*)', '/api/upload(.*)']);
+
+export default clerkMiddleware((auth, req) => {
+  // Protect upload and book creation routes
+  if (isProtectedRoute(req)) {
+    auth.protect();
+  }
+});
 
 export const config = {
   matcher: [

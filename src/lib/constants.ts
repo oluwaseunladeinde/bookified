@@ -93,7 +93,12 @@ export const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 // Pre-configured VAPI assistant ID (hardcoded for this app)
-export const ASSISTANT_ID = process.env.NEXT_PUBLIC_ASSISTANT_ID!;
+// Validate at runtime to fail fast with a helpful message
+const assistantId = process.env.NEXT_PUBLIC_ASSISTANT_ID;
+if (!assistantId) {
+    throw new Error('Missing required environment variable: NEXT_PUBLIC_ASSISTANT_ID');
+}
+export const ASSISTANT_ID = assistantId;
 
 // 11Labs Voice IDs - Optimized for conversational AI
 // Voices selected for natural, engaging book conversations
@@ -106,6 +111,15 @@ export const voiceOptions = {
     rachel: { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel', description: 'Young female, American, calm & clear' },
     sarah: { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah', description: 'Young female, American, soft & approachable' },
 };
+
+// Voice IDs - for schema validation (re-exported for consistency)
+export const VOICE_IDS = {
+    dave: 'CYw3kZ02Hs0563khs1Fj',
+    daniel: 'onwK4e9ZLuTAKqWW03F9',
+    chris: 'iP95p4xoKVk53GoZ742B',
+    rachel: '21m00Tcm4TlvDq8ikWAM',
+    sarah: 'EXAVITQu4vr4xnSDxMaL',
+} as const;
 
 // Voice categories for the selector UI
 export const voiceCategories = {

@@ -1,23 +1,20 @@
 import { z } from 'zod';
 
-// File validation constants
-export const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-export const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
-export const ACCEPTED_PDF_TYPES = ['application/pdf'];
-export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+// Import shared constants from the single source of truth
+import {
+    MAX_FILE_SIZE,
+    MAX_IMAGE_SIZE,
+    ACCEPTED_PDF_TYPES,
+    ACCEPTED_IMAGE_TYPES,
+    VOICE_IDS
+} from './constants';
 
-// Voice IDs
-export const VOICE_IDS = {
-    dave: 'CYw3kZ02Hs0563khs1Fj',
-    daniel: 'onwK4e9ZLuTAKqWW03F9',
-    chris: 'iP95p4xoKVk53GoZ742B',
-    rachel: '21m00Tcm4TlvDq8ikWAM',
-    sarah: 'EXAVITQu4vr4xnSDxMaL',
-} as const;
+// Re-export for backwards compatibility with existing consumers
+export { MAX_FILE_SIZE, MAX_IMAGE_SIZE, ACCEPTED_PDF_TYPES, ACCEPTED_IMAGE_TYPES, VOICE_IDS };
 
 // File validation helpers
 const pdfFileSchema = z
-    .instanceof(File, { message: 'PDF file is required' })
+    .instanceof(File, { error: 'PDF file is required' })
     .refine((file) => file.size <= MAX_FILE_SIZE, 'PDF file must be less than 50MB')
     .refine(
         (file) => ACCEPTED_PDF_TYPES.includes(file.type),
@@ -33,8 +30,8 @@ const coverImageSchema = z
     )
     .optional();
 
-// Voice validation
-const voiceSchema = z.enum(['dave', 'daniel', 'chris', 'rachel', 'sarah']);
+// Voice validation using VOICE_IDS keys
+const voiceSchema = z.enum(Object.keys(VOICE_IDS) as [keyof typeof VOICE_IDS, ...(keyof typeof VOICE_IDS)[]]);
 
 // Upload form schema
 export const UploadSchema = z.object({

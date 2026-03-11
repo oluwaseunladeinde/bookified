@@ -7,7 +7,7 @@ import "./globals.css";
 
 
 const ibmPlexSerif = IBM_Plex_Serif({
-  variable: "--font-ibm-plex-sefif",
+  variable: "--font-ibm-plex-serif",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"]
 });
