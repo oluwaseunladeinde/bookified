@@ -39,7 +39,7 @@ export const UploadSchema = z.object({
     coverImage: coverImageSchema,
     title: z.string().trim().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
     author: z.string().trim().min(1, 'Author name is required').max(100, 'Author must be less than 100 characters'),
-    voice: voiceSchema,
+    persona: voiceSchema,
 });
 
 // Type for form values

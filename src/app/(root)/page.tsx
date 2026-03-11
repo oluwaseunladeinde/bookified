@@ -1,9 +1,16 @@
 
 import BookCard from '@/components/book-card'
 import HeroSection from '@/components/hero-section'
+import { getAllBooks } from '@/lib/actions/book.actions';
 import { sampleBooks } from '@/lib/constants'
 
-const Page = () => {
+const Page = async ({ searchParams }: { searchParams: Promise<{ query?: string }> }) => {
+
+    const { query } = await searchParams;
+
+    const bookResults = await getAllBooks(query)
+    const books = bookResults.success ? bookResults.data ?? [] : []
+
     return (
         <main className="wrapper container">
             {/* Hero Section */}
@@ -15,7 +22,7 @@ const Page = () => {
             </div>
 
             <div className="library-books-grid">
-                {sampleBooks.map((book) => (
+                {books.map((book) => (
                     <BookCard key={book._id} title={book.title} author={book.author} coverURL={book.coverURL} slug={book.slug} />
                 ))}
             </div>
