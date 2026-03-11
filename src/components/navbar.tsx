@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { usePathname } from "next/navigation";
-import { SignInButton, Show, UserButton, useUser } from "@clerk/nextjs";
+import { Show, SignInButton, UserButton, useUser } from "@clerk/nextjs";
 
 import { cn } from "@/lib/utils";
 

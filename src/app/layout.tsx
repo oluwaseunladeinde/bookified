@@ -4,6 +4,7 @@ import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@cl
 
 import Navbar from "@/components/navbar";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 
 const ibmPlexSerif = IBM_Plex_Serif({
@@ -36,6 +37,7 @@ export default function RootLayout({
         <ClerkProvider>
           <Navbar />
           {children}
+          <Toaster position="bottom-right" richColors />
         </ClerkProvider>
       </body>
     </html>
