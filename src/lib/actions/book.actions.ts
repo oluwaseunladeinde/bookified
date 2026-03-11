@@ -112,19 +112,46 @@ export const createBook = async (data: CreateBook) => {
 
 export const saveBookSegments = async (
     bookId: string,
-    clerkId: string,
     segments: TextSegment[]) => {
+    let session: import('mongoose').ClientSession | undefined;
     try {
         await connectToDatabase();
 
+        // Get authenticated user from Clerk
+        const { auth } = await import("@clerk/nextjs/server");
+        const userId = await auth();
+
+        if (!userId) {
+            return { success: false, error: "Unauthorized: Not authenticated" };
+        }
+
+        // Load the book and verify ownership
+        const book = await Book.findById(bookId);
+
+        if (!book) {
+            return { success: false, error: "Unauthorized: Book not found" };
+        }
+
+        if (book.clerkId !== userId) {
+            return { success: false, error: "Unauthorized: You do not own this book" };
+        }
+
         console.log('Saving book segments...');
 
+        // Get mongoose connection for transaction
+        const mongoose = await import('mongoose');
+        const connection = mongoose.connection;
+        session = await connection.startSession();
+
         const segmentsToInsert = segments.map(({ text, segmentIndex, pageNumber, wordCount }) => ({
-            clerkId, bookId, content: text, segmentIndex, pageNumber, wordCount
+            clerkId: userId, bookId, content: text, segmentIndex, pageNumber, wordCount
         }));
 
-        await BookSegment.insertMany(segmentsToInsert);
-        await Book.findByIdAndUpdate(bookId, { totalSegments: segments.length });
+        // Use transaction for atomic writes
+        await session.withTransaction(async () => {
+            await BookSegment.insertMany(segmentsToInsert, { session });
+            await Book.findByIdAndUpdate(bookId, { totalSegments: segments.length }, { session });
+        });
 
         console.log('Book segments saved successfully.');
 
@@ -137,10 +164,11 @@ export const saveBookSegments = async (
     catch (error) {
         console.error('Error saving book segments', error);
 
-        await BookSegment.deleteMany({ bookId, clerkId });
-        await Book.findByIdAndDelete(bookId);
-
-        console.log('Deleted the book segment and the book due to failure in saving other segments.');
+        // Abort transaction on error instead of deleting data
+        if (session) {
+            await session.abortTransaction();
+            session.endSession();
+        }
 
         return {
             success: false,

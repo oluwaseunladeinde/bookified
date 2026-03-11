@@ -27,12 +27,12 @@ const VoiceSelector = ({ value, onChange, disabled, className }: VoiceSelectorPr
                                 <Label
                                     key={voiceId}
                                     className={cn(
-                                        'voice-selector-option',
+                                        'voice-selector-option peer-focus-visible:ring-2 peer-focus-visible:ring-[#663820] peer-focus-visible:ring-offset-2',
                                         isSelected ? 'voice-selector-option-selected' : 'voice-selector-option-default',
                                         disabled && 'voice-selector-option-disabled'
                                     )}
                                 >
-                                    <RadioGroupItem value={voiceId} id={voiceId} className="sr-only" />
+                                    <RadioGroupItem value={voiceId} id={voiceId} className="peer sr-only" />
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-2">
                                             <div className={cn(
@@ -64,12 +64,12 @@ const VoiceSelector = ({ value, onChange, disabled, className }: VoiceSelectorPr
                                 <Label
                                     key={voiceId}
                                     className={cn(
-                                        'voice-selector-option',
+                                        'voice-selector-option peer-focus-visible:ring-2 peer-focus-visible:ring-[#663820] peer-focus-visible:ring-offset-2',
                                         isSelected ? 'voice-selector-option-selected' : 'voice-selector-option-default',
                                         disabled && 'voice-selector-option-disabled'
                                     )}
                                 >
-                                    <RadioGroupItem value={voiceId} id={voiceId} className="sr-only" />
+                                    <RadioGroupItem value={voiceId} id={voiceId} className="peer sr-only" />
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-2">
                                             <div className={cn(
