@@ -1,13 +1,24 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
-// Define protected routes
-const isProtectedRoute = createRouteMatcher(['/books/new(.*)', '/api/upload(.*)']);
+const isPublicRoute = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)"]);
 
-export default clerkMiddleware((auth, req) => {
-  // Protect upload and book creation routes
-  if (isProtectedRoute(req)) {
-    auth.protect();
+
+export default clerkMiddleware(async (auth, req) => {
+
+  const { userId } = await auth();
+
+  // Allow public routes
+  if (isPublicRoute(req)) {
+    return NextResponse.next();
   }
+
+  // Protect non-public routes
+  if (!userId) {
+    await auth.protect();
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {
@@ -18,3 +29,4 @@ export const config = {
     '/(api|trpc)(.*)',
   ],
 };
+
