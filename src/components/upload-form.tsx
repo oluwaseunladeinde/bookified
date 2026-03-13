@@ -15,7 +15,7 @@ import { ACCEPTED_PDF_TYPES, ACCEPTED_IMAGE_TYPES, DEFAULT_VOICE } from '@/lib/c
 import FileUploader from './file-uploader';
 import VoiceSelector from './voice-selector';
 import LoadingOverlay from './loading-overlay';
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { toast } from 'sonner';
 import { checkBookExists, createBook, saveBookSegments } from "@/lib/actions/book.actions";
 import { useRouter } from "next/navigation";
@@ -67,8 +67,8 @@ const UploadForm = () => {
 
             const parsedPDF = await parsePDFFile(pdfFile);
 
-            if (parsedPDF.content.length === 0) {
-                toast.error("Failed to parse PDF. Please try again with a different file.");
+            if (!parsedPDF.content || !Array.isArray(parsedPDF.content) || parsedPDF.content.length === 0) {
+                toast.error("Failed to parse PDF content. Please try a different file.");
                 return;
             }
 

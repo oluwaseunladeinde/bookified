@@ -152,7 +152,26 @@ export const saveBookSegments = async (bookId: string, clerkId: string, segments
     try {
         await connectToDatabase();
 
-        console.log('Saving book segments...');
+        // Auth check like in createBook       
+        const { auth } = await import("@clerk/nextjs/server");
+        const { userId } = await auth();
+        if (!userId || userId !== clerkId) {
+            return { success: false, error: "Unauthorized" };;
+        }
+
+        // Verify book ownership        
+        const book = await Book.findById(bookId).select('clerkId').lean();
+        if (!book || book.clerkId !== clerkId) {
+            return { success: false, error: "Book not found or unauthorized" };
+        }
+
+        // Validate segments input&#10;        
+        if (!segments || !Array.isArray(segments) || segments.length === 0) {
+            console.warn('Invalid segments data:', { segments, length: segments?.length, type: typeof segments });
+            return { success: false, error: "No valid segments provided" };
+        }
+
+        console.log(`Saving ${segments.length} book segments for book ${bookId}...`);
 
         const segmentsToInsert = segments.map(({ text, segmentIndex, pageNumber, wordCount }) => ({
             clerkId, bookId, content: text, segmentIndex, pageNumber, wordCount

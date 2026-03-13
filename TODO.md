@@ -1,6 +1,9 @@
-# Bookify README Update TODO
+# Fix saveBookSegments Error: segments undefined
 
-- [x] Update README.md with comprehensive project documentation
-- [x] Run `npm run lint` to verify
-- [x] Preview changes with `npm run dev`
-- [x] Mark complete and attempt_completion
+## Steps:
+- [x] Step 1: Add auth checks and input validation to src/lib/actions/book.actions.ts `saveBookSegments`
+- [x] Step 2: Add parsedPDF validation in src/components/upload-form.tsx before calling saveBookSegments  
+- [ ] Step 3: Test upload flow with valid PDF
+- [ ] Step 4: Test with invalid/empty PDF (should handle gracefully)
+- [ ] Step 5: Verify DB - Book.totalSegments updated and segments inserted
+- [ ] COMPLETE
