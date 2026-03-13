@@ -22,7 +22,7 @@
 
 1. **Clone & Install**
    ```bash
-   git clone <repo> bookify
+   git clone https://github.com/oluwaseunladeinde/bookify.git bookify
    cd bookify
    npm install
    ```
@@ -94,7 +94,7 @@ Deploy to Vercel in 2 clicks:
 2. Add env vars in Vercel dashboard
 3. Deploy! Blob/DB auto-configure.
 
-[Deploy Button](https://vercel.com/new/clone?repository-url=https://github.com/vercel/next.js&env=NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,CLERK_SECRET_KEY,NEXT_PUBLIC_VAPI_API_KEY&project-name=bookify)
+[Deploy Button](https://vercel.com/new/clone?repository-url=https://github.com/oluwaseunladeinde/bookify&env=MONGODB_URI,NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,CLERK_SECRET_KEY,NEXT_PUBLIC_VAPI_API_KEY,VERCEL_BLOB_READ_WRITE_TOKEN&project-name=bookify)
 
 ## 🔮 Roadmap
 
