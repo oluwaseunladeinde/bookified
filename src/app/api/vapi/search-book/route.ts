@@ -38,29 +38,65 @@ export async function GET() {
   return NextResponse.json({ status: 'ok' });
 }
 
+// Parse tool arguments that may arrive as a JSON string or an object
+function parseArgs(args: unknown): Record<string, unknown> {
+  if (!args) return {};
+  if (typeof args === 'string') {
+    try { return JSON.parse(args); } catch { return {}; }
+  }
+  return args as Record<string, unknown>;
+}
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const toolCalls = body.tool_calls || [];
+
+    console.log('Vapi search-book request:', JSON.stringify(body, null, 2));
+
+    // Support multiple Vapi formats
+    const functionCall = body?.message?.functionCall;
+    const toolCallList = body?.message?.toolCallList || body?.message?.toolCalls;
+
+    // Handle single functionCall format
+    if (functionCall) {
+      const { name, parameters } = functionCall;
+      const parsed = parseArgs(parameters);
+
+      if (name === 'searchBook') {
+        const result = await processBookSearch(parsed.bookId, parsed.query);
+        return NextResponse.json(result);
+      }
+
+      return NextResponse.json({ result: `Unknown function: ${name}` });
+    }
+
+    // Handle toolCallList format (array of calls)
+    if (!toolCallList || toolCallList.length === 0) {
+      return NextResponse.json({
+        results: [{ result: 'No tool calls found' }],
+      });
+    }
+
     const results = [];
 
-    for (const tc of toolCalls) {
-      if (tc.name === 'search book') {
-        const { bookId, query } = tc.parameters || {};
-        if (bookId && query) {
-          const result = await searchBookSegments(bookId, query, 3);
-          results.push({
-            tool_call_id: tc.id,
-            result
-          });
-        }
+    for (const toolCall of toolCallList) {
+      const { id, function: func } = toolCall;
+      const name = func?.name;
+      const args = parseArgs(func?.arguments);
+
+      if (name === 'searchBook') {
+        const searchResult = await processBookSearch(args.bookId, args.query);
+        results.push({ toolCallId: id, ...searchResult });
+      } else {
+        results.push({ toolCallId: id, result: `Unknown function: ${name}` });
       }
     }
 
-    return NextResponse.json({ tool_calls: results });
+    return NextResponse.json({ results });
   } catch (e) {
     console.error('Vapi search-book error:', e);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({
+      results: [{ result: 'Error processing request' }],
+    });
   }
 }
