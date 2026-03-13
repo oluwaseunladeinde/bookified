@@ -2,7 +2,18 @@
 import BookCard from '@/components/book-card'
 import HeroSection from '@/components/hero-section'
 import { getAllBooks } from '@/lib/actions/book.actions';
-import { sampleBooks } from '@/lib/constants'
+
+export const dynamic = 'force-dynamic';
+
+/**
+ * Page component
+ *
+ * This component renders the main page of the application.
+ * It displays a hero section, a list of recent books, and a search bar.
+ *
+ * @param {object} searchParams - An object containing the search query as a property.
+ * @returns {Promise<React.ReactElement>} - A promise that resolves to a JSX element.
+ **/
 
 const Page = async ({ searchParams }: { searchParams: Promise<{ query?: string }> }) => {
 
