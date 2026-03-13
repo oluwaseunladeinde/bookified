@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Mic, ArrowLeft, MicOff } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { getBookBySlug } from '@/lib/actions/book.actions';
 import { auth } from '@clerk/nextjs/server';
 import VapiControls from '@/components/vapi-controls';
@@ -23,8 +22,6 @@ export default async function BookPage({ params }: PageProps) {
     if (!bookResult.success || !bookResult.data) {
         redirect('/');
     }
-
-    const { title, author, coverURL, persona } = bookResult.data;
 
     return (
         <main className="book-page-container">
