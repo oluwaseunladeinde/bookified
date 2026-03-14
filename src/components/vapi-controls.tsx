@@ -1,20 +1,37 @@
-'use client'
+'use client';
 
 import { Mic, MicOff } from "lucide-react";
 import useVapi from "@/hooks/use-vapi";
-import Transcript from "./transcript";
 import { IBook } from "@/types";
 import Image from "next/image";
-
+import Transcript from "@/components/transcript";
 import { toast } from "sonner";
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const VapiControls = ({ book }: { book: IBook }) => {
-    const vapi = useVapi(book);
 
-    const { clearErrors, currentMessage: vapiCurrentMessage, currentUserMessage: vapiCurrentUserMessage, start, stop, isActive, status, duration } = vapi;
+    const { status, isActive, messages, currentMessage, currentUserMessage, duration, start, stop, clearError, limitError, isBillingError, maxDurationSeconds } = useVapi(book)
+    const router = useRouter();
+
+    useEffect(() => {
+        if (limitError) {
+            toast.error(limitError);
+            if (isBillingError) {
+                router.push("/subscriptions");
+            } else {
+                router.push("/");
+            }
+            clearError();
+        }
+    }, [isBillingError, limitError, router, clearError]);
+
+    const formatDuration = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
 
     const getStatusDisplay = () => {
         switch (status) {
@@ -42,14 +59,15 @@ const VapiControls = ({ book }: { book: IBook }) => {
                             height={180}
                             className="vapi-cover-image"
                         />
-                        <div className="vapi-mic-wrapper">
+                        <div className="vapi-mic-wrapper relative">
                             {isActive && (status === 'speaking' || status === 'thinking') && (
                                 <div className="absolute inset-0 rounded-full bg-white animate-ping opacity-75" />
                             )}
                             <button
                                 onClick={isActive ? stop : start}
                                 disabled={status === 'connecting'}
-                                className="vapi-mic-btn vapi-mic-btn-inactive shadow-md">
+                                className={`vapi-mic-btn shadow-md w-15! h-15! z-10 ${isActive ? 'vapi-mic-btn-active' : 'vapi-mic-btn-inactive'}`}
+                            >
                                 {isActive ? (
                                     <Mic className="size-7 text-white" />
                                 ) : (
@@ -58,30 +76,41 @@ const VapiControls = ({ book }: { book: IBook }) => {
                             </button>
                         </div>
                     </div>
-                    <div className="flex flex-col gap-4 min-w-0">
-                        <h1 className="text-2xl sm:text-3xl font-serif font-bold leading-tight">{book.title}</h1>
-                        <p className="text-lg text-muted-foreground">by {book.author}</p>
-                        <div className="flex flex-wrap gap-2">
+
+                    <div className="flex flex-col gap-4 flex-1">
+                        <div>
+                            <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#212a3b] mb-1">
+                                {book.title}
+                            </h1>
+                            <p className="text-[#3d485e] font-medium">by {book.author}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-3">
                             <div className="vapi-status-indicator">
-                                <div className="vapi-status-dot vapi-status-dot-ready" />
-                                <span className="vapi-status-text">Ready</span>
+                                <span className={`vapi-status-dot ${statusDisplay.color}`} />
+                                <span className="vapi-status-text">{statusDisplay.label}</span>
                             </div>
+
                             <div className="vapi-status-indicator">
-                                <span className="vapi-status-text">Voice: {book.persona || 'Default'}</span>
+                                <span className="vapi-status-text">Voice: {book.persona || "Daniel"}</span>
                             </div>
+
                             <div className="vapi-status-indicator">
-                                <span className="vapi-status-text">0:00/15:00</span>
+                                <span className="vapi-status-text">
+                                    {formatDuration(duration)}/{formatDuration(maxDurationSeconds)}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <div className="vapi-transcript-wrapper bg-white rounded-xl p-4">
-                    <Transcript
-                        messages={vapi.messages}
-                        currentMessage={vapiCurrentMessage}
-                        currentUserMessage={vapiCurrentUserMessage}
-                    />
+                <div className="vapi-transcript-wrapper">
+                    <div className="transcript-container min-h-100">
+                        <Transcript
+                            messages={messages}
+                            currentMessage={currentMessage}
+                            currentUserMessage={currentUserMessage}
+                        />
+                    </div>
                 </div>
             </div>
 

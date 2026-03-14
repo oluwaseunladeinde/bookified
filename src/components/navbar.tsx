@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
     { label: "Library", href: "/" },
     { label: "Add New", href: "/books/new", prefetch: false },
+    { label: "Pricing", href: "/subscriptions" },
 ]
 
 const Navbar = () => {
@@ -39,9 +40,15 @@ const Navbar = () => {
                             <SignInButton />
                         </Show>
                         <Show when="signed-in">
-                            <div className="nav-user-link">
+                            <div className="nav-user-link flex gap-2 items-center">
                                 <UserButton />
-                                {user?.firstName && <Link href="/subscriptions" className="nav-user-name">{user.firstName}</Link>}
+                                {user?.firstName && (
+                                    <>
+                                        <Link href="/subscriptions" className="nav-user-name hover:underline text-sm">
+                                            {user.firstName}
+                                        </Link>
+                                    </>
+                                )}
                             </div>
                         </Show>
                     </div>
