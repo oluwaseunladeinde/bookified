@@ -1,9 +1,21 @@
-# Fix saveBookSegments Error: segments undefined
+# Clerk Billing Implementation TODO
 
-## Steps:
-- [x] Step 1: Add auth checks and input validation to src/lib/actions/book.actions.ts `saveBookSegments`
-- [x] Step 2: Add parsedPDF validation in src/components/upload-form.tsx before calling saveBookSegments  
-- [ ] Step 3: Test upload flow with valid PDF
-- [ ] Step 4: Test with invalid/empty PDF (should handle gracefully)
-- [ ] Step 5: Verify DB - Book.totalSegments updated and segments inserted
-- [ ] COMPLETE
+## Steps (planned & approved):
+
+### 1. ✅ Create subscription.server.ts (server utils: getUserPlan, canCreateBook, canStartSession)
+### 2. ✅ Create subscription.client.ts (client utils: useUserPlan, getPlanLimits)
+### 3. ✅ Update book.actions.ts (integrate canCreateBook check)
+### 4. ✅ Update session.actions.ts (integrate canStartSession check)
+### 5. ✅ Create /subscriptions/page.tsx (PricingTable component)
+### 6. ✅ Update navbar.tsx (add subscriptions link)
+### 7. ✅ Minor types.d.ts updates if needed (none required)
+### 8. ✅ Complete: Clerk Billing integrated!
+
+Clerk Billing fully implemented:
+- ✅ Server utils for plan checks
+- ✅ Book & session limit enforcement
+- ✅ Pricing page with styled <PricingTable />
+- ✅ Navbar subscription link
+- ✅ Error handling with isBillingError flag
+
+Next: npm i @clerk/nextjs@latest (if needed), add priceId env vars, test with Clerk dashboard plans.
